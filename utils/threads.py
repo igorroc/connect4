@@ -36,7 +36,7 @@ def new_client_instructions(clientSocket, currentGames):
         clientSocket.send('start-choose'.encode())
     else:
         clientSocket.send(
-            'Não existem jogos em andamento.'.encode()
+            'Não existem jogos disponíveis em andamento.'.encode()
         )
         time.sleep(0.2)
         clientSocket.send(
@@ -117,6 +117,9 @@ def handle_messages(connection, address, currentGames, currentClients):
                 + colorama.Fore.LIGHTGREEN_EX
                 + f'venceu o jogo!' + colorama.Fore.RESET
             )
+            # remove from currentGames and currentClients
+            currentGames.remove(playerGame)
+            
             connection.send(
                 game.sendGameToMessage(playerGame, 'winner').encode()
             )

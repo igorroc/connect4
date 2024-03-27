@@ -48,7 +48,9 @@ while True:
 
     selectedGame = None
 
-    if(len(currentGames) > 0):
+    available_games = {str(i): game for i, game in enumerate(currentGames) if len(game['players']) == 1}
+
+    if(len(available_games) > 0):
         msg = clientSocket.recv(BUFFER_SIZE)
         selectedIndex = msg.decode().split('choose:')[1]
         if(selectedIndex == ''):
@@ -97,7 +99,6 @@ while True:
 
     currentClients.append(
         {"socket": clientSocket, "address": address, "username": msg})
-    
     
     
     if(selectedGame != None):
