@@ -56,13 +56,13 @@ def play(table, player, position):
     height = len(table)
     
     if position < 0 or position >= width:
-        return 'Posição inválida! Tente novamente.'
+        return False
     
     if table[0][position] != 0:
-        return 'Coluna cheia! Tente novamente.'
+        return False
     
     if(position < 0 or position > 6):
-        return 'Posição inválida! Tente novamente.'
+        return False
     
     for i in range(5, -1, -1):
         if table[i][position] == 0:

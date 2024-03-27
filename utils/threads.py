@@ -94,8 +94,13 @@ def handle_messages(connection, address, currentGames, currentClients):
             connection.close()
             break
 
-        game.play(playerGame['table'], currentPlayer, msg)
+        validPlay = game.play(playerGame['table'], currentPlayer, msg)
         
+        if not validPlay:
+            connection.send(
+                game.sendGameToMessage(playerGame, 'invalid_play').encode()
+            )
+            continue
         
         print(
             colorama.Fore.LIGHTMAGENTA_EX

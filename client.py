@@ -73,10 +73,8 @@ def main():
     # Loop de interação com o servidor
     while msg.decode() != 'close':
         cmd.clear_screen()
-        if GAME['action'] == 'wait_player' or GAME['action'] == 'wait':
-            print(f"Aguardando jogadores...")
-        else:
-            print(f"Jogadores: {', '.join(GAME['players'])}")
+        # else:
+        #     print(f"Jogadores: {', '.join(GAME['players'])}")
         print()
         game.printTable(GAME['table'])
         
@@ -94,22 +92,34 @@ def main():
                 + colorama.Fore.RESET
             )
             break
-        
-        if PLAYER_SYMBOL == 1:
+        if GAME['action'] == 'invalid_play':
             print(
-                colorama.Fore.RED +
-                f"Você é o ' X '"
-                + colorama.Fore.RESET
-            )
-        else:
-            print(
-                colorama.Fore.YELLOW +
-                f"Você é o ' O '"
+                colorama.Fore.LIGHTRED_EX +
+                f"Jogada inválida! Tente novamente."
                 + colorama.Fore.RESET
             )
         
-        if(GAME['action'] == 'play'):
+        if GAME['action'] == 'wait_player' or GAME['action'] == 'wait':
+            print(f"Aguardando jogadores...")
+            
+        if GAME['action'] == 'opponent_turn':
+            print(f"Aguardando a jogada do oponente...")
+        
+        if(GAME['action'] == 'play' or GAME['action'] == 'invalid_play'):
+            if PLAYER_SYMBOL == 1:
+                print(
+                    colorama.Fore.RED +
+                    f"Você é o ' X '"
+                    + colorama.Fore.RESET
+                )
+            else:
+                print(
+                    colorama.Fore.YELLOW +
+                    f"Você é o ' O '"
+                    + colorama.Fore.RESET
+                )
             position = input(
+                '\n' +
                 colorama.Fore.LIGHTCYAN_EX +
                 " Sua jogada ▶ " + colorama.Fore.RESET
             )
