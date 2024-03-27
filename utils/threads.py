@@ -96,6 +96,7 @@ def handle_messages(connection, address, currentGames, currentClients):
 
         game.play(playerGame['table'], currentPlayer, msg)
         
+        
         print(
             colorama.Fore.LIGHTMAGENTA_EX
             + '[GAME_PLAY]: ' + colorama.Fore.RESET +
@@ -104,11 +105,34 @@ def handle_messages(connection, address, currentGames, currentClients):
             + f'\'{msg}\' ' + colorama.Style.RESET_ALL
         )
         
+        gameWinner = game.checkWinner(playerGame['table'])
+        
+        # 0 para nenhum ganhador, 1 para player 1 e 2 para player 2
+        if gameWinner != 0:
+            print(
+                colorama.Fore.LIGHTGREEN_EX
+                + '[GAME_WINNER]: ' + colorama.Fore.RESET
+                + colorama.Fore.LIGHTCYAN_EX
+                + f'@{user} ' + colorama.Fore.RESET
+                + colorama.Fore.LIGHTGREEN_EX
+                + f'venceu o jogo!' + colorama.Fore.RESET
+            )
+            connection.send(
+                game.sendGameToMessage(playerGame, 'winner').encode()
+            )
+            connection.close()
+            for _client in currentClients:
+                if _client['address'] in playerGame['players'] and _client['address'] != address:
+                    _client['socket'].send(
+                        game.sendGameToMessage(playerGame, 'loser').encode()
+                    )
+                    _client['socket'].close()
+            break
+        
         connection.send(
             game.sendGameToMessage(playerGame, 'other_turn').encode()
         )
         
-        # send the message to the other player
         for _client in currentClients:
             if _client['address'] in playerGame['players'] and _client['address'] != address:
                 _client['socket'].send(

@@ -80,6 +80,21 @@ def main():
         print()
         game.printTable(GAME['table'])
         
+        if GAME['action'] == 'winner':
+            print(
+                colorama.Fore.LIGHTGREEN_EX +
+                f"Você venceu o jogo! Parabéns!"
+                + colorama.Fore.RESET
+            )
+            break
+        if GAME['action'] == 'loser':
+            print(
+                colorama.Fore.LIGHTRED_EX +
+                f"Você perdeu o jogo! Tente novamente!"
+                + colorama.Fore.RESET
+            )
+            break
+        
         if PLAYER_SYMBOL == 1:
             print(
                 colorama.Fore.RED +
