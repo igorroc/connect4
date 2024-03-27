@@ -58,19 +58,24 @@ def handle_messages(connection, address, currentGames):
             )
             connection.send('close'.encode())
             connection.close()
-
             break
 
-        fraseInterpretada = 'test'
-        connection.send(fraseInterpretada.encode())
+        player1Game = list(filter(lambda x: x['players'][0] == connection, currentGames))[0]
+        
+        game.play(player1Game['table'], 1, msg)
+        
         print(
             colorama.Fore.LIGHTMAGENTA_EX
-            + '[REQUEST]: ' + colorama.Fore.RESET +
+            + '[GAME_PLAY]: ' + colorama.Fore.RESET +
             colorama.Fore.LIGHTCYAN_EX
             + f'@{user} ' + colorama.Fore.RESET + colorama.Style.DIM
             + f'\'{msg}\' ' + colorama.Style.RESET_ALL
-            + colorama.Back.MAGENTA + f' {fraseInterpretada} '
-            + colorama.Back.RESET
         )
+        
+        connection.send(
+            game.sendGameToMessage(player1Game).encode()
+        )
+        
+        
 
     connection.close()

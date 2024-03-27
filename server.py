@@ -43,7 +43,7 @@ while True:
         f'+ Conexão estabelecida com o cliente: {address}'
         + colorama.Fore.RESET
     )
-
+    
     ServerThreads.new_client_instructions(clientSocket, currentGames)
 
     if(len(currentGames) > 0):
@@ -60,12 +60,12 @@ while True:
             + colorama.Fore.RESET
         )
         clientSocket.send(
-            game.sendGameTableToMessage(currentGames[selectedIndex]).encode()
+            game.sendGameToMessage(currentGames[selectedIndex]).encode()
         )
     else:
-        game.createGameTable(currentGames, clientSocket)
+        game.createGameTable(currentGames, address)
         clientSocket.send(
-            game.sendGameTableToMessage(currentGames[0]).encode()
+            game.sendGameToMessage(currentGames[0]).encode()
         )
         print(
             colorama.Fore.LIGHTCYAN_EX +

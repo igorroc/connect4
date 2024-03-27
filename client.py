@@ -29,7 +29,7 @@ def main():
 
     # Instruções para o cliente
     msg = server.recv(BUFFER_SIZE)
-    while msg.decode() != 'start-choose' and msg.decode().startswith('table:') == False:
+    while msg.decode() != 'start-choose' and msg.decode().startswith('players:') == False:
         print(msg.decode())
         msg = server.recv(BUFFER_SIZE)
 
@@ -48,20 +48,18 @@ def main():
             server.close()
             return cmd.clear_terminal_color()
         else:
-            GAME = game.getGameTableFromMessage(msg.decode())
+            GAME = game.getGameFromMessage(msg.decode())
             print(
                 colorama.Fore.LIGHTGREEN_EX +
                 '+ Conectado ao jogo ' + CURRENT_GAME
             )
     else:
-        print(f'teste: {msg.decode()}')
-        GAME = game.getGameTableFromMessage(msg.decode())
+        GAME = game.getGameFromMessage(msg.decode())
         print(
             colorama.Fore.LIGHTGREEN_EX +
             '+ Conectado a um novo jogo'
         )
 
-    # Captura o nome do usuário
     print("\n")
     print("Digite seu nome de usuário:")
     USER = input(
@@ -69,11 +67,11 @@ def main():
     )
     server.send(f'name:{USER}'.encode())
 
-    cmd.clear_screen()
-    
-    print(f"Jogo -> {USER} x INIMIGO")
+    print(f'Game: {GAME}')
     # Loop de interação com o servidor
     while msg.decode() != 'close':
+        cmd.clear_screen()
+        print(f"Jogo -> {USER} x INIMIGO 2\n")
         game.printTable(GAME)
         position = input(
             colorama.Fore.LIGHTCYAN_EX +
@@ -83,12 +81,8 @@ def main():
 
         msg = server.recv(BUFFER_SIZE)
         if msg.decode() != 'close':
-            print(
-                '{:>40}'.format(msg.decode()) +
-                colorama.Fore.LIGHTMAGENTA_EX + ' ◀' + colorama.Fore.RESET
-            )
+            GAME = game.getGameFromMessage(msg.decode())
         
-        GAME = game.getGameTableFromMessage(msg.decode())
 
     print('\n')
     print(colorama.Fore.LIGHTRED_EX + f'- Conexão encerrada com o servidor')
