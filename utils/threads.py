@@ -56,12 +56,30 @@ def handle_messages(connection, address, currentGames):
                 + f'{user} ' + colorama.Style.DIM
                 + f'{address}' + colorama.Style.RESET_ALL
             )
+            for _game in currentGames:
+                if address in _game['players']:
+                    _game['players'].remove(address)
+                    break
             connection.send('close'.encode())
             connection.close()
             break
 
-        player1Game = list(filter(lambda x: x['players'][0] == connection, currentGames))[0]
+        player1Game = None
         
+        for _game in currentGames:
+            if address in _game['players']:
+                player1Game = _game
+                break
+            
+        if player1Game == None:
+            print(
+                colorama.Fore.LIGHTRED_EX
+                + '[ERROR]: ' + colorama.Fore.RESET
+                + 'Jogo não encontrado.'
+            )
+            connection.send('not-found'.encode())
+            continue
+
         game.play(player1Game['table'], 1, msg)
         
         print(
@@ -75,7 +93,5 @@ def handle_messages(connection, address, currentGames):
         connection.send(
             game.sendGameToMessage(player1Game).encode()
         )
-        
-        
 
     connection.close()

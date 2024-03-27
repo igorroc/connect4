@@ -15,6 +15,8 @@ def joinPlayerToGame(currentGames, index, connection):
 def getGameFromMessage(message):
     players = message.split('players:')[1].split(';')[0].split(',')
     table = message.split('table:')[1].split(';')
+    if table[-1] == '':
+        table.pop()
     return {'players': players, 'table': table}
 
 def sendGameToMessage(game):
@@ -27,23 +29,32 @@ def sendGameToMessage(game):
 
 def printTable(table):
     print('  1   2   3   4   5   6   7')
-    for i in range(6):
-        print('┌   ┬   ┬   ┬   ┬   ┬   ┬   ┐')
+    print('┌   ┬   ┬   ┬   ┬   ┬   ┬   ┐')
+    for row in table:
         print('│', end='')
-        for j in range(7):
-            if table[i][j] == 0:
-                print('   ', end='')
-            elif table[i][j] == 1:
-                print(colorama.Fore.RED + ' X ' + colorama.Fore.RESET, end='')
-            elif table[i][j] == 2:
-                print(colorama.Fore.YELLOW + ' O ' + colorama.Fore.RESET, end='')
-            print('│', end='')
-        print()
+        splitted = row.split(',')
+        if(len(splitted) == 0):
+            continue
+        for cell in splitted:
+            if cell == '1':
+                print(colorama.Fore.RED + ' X ' + colorama.Fore.RESET, end='│')
+            elif cell == '2':
+                print(colorama.Fore.YELLOW + ' O ' + colorama.Fore.RESET, end='│')
+            else:
+                print('   ', end='│')
+            print(colorama.Fore.RESET, end='')
+        print('')
     print('└───┴───┴───┴───┴───┴───┴───┘')
     print('\n')
     
 def play(table, player, position):
     position = int(position) - 1
+    width = len(table[0])
+    height = len(table)
+    
+    if position < 0 or position >= width:
+        return 'Posição inválida! Tente novamente.'
+    
     if table[0][position] != 0:
         return 'Coluna cheia! Tente novamente.'
     

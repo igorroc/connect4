@@ -67,12 +67,11 @@ def main():
     )
     server.send(f'name:{USER}'.encode())
 
-    print(f'Game: {GAME}')
     # Loop de interação com o servidor
     while msg.decode() != 'close':
         cmd.clear_screen()
         print(f"Jogo -> {USER} x INIMIGO 2\n")
-        game.printTable(GAME)
+        game.printTable(GAME['table'])
         position = input(
             colorama.Fore.LIGHTCYAN_EX +
             " Sua jogada ▶ " + colorama.Fore.RESET
