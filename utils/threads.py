@@ -131,13 +131,11 @@ def handle_messages(connection, address, currentGames, currentClients):
             connection.send(
                 game.sendGameToMessage(playerGame, 'winner', currentClients).encode()
             )
-            connection.close()
             for _client in currentClients:
                 if _client['address'] in playerGame['players'] and _client['address'] != address:
                     _client['socket'].send(
                         game.sendGameToMessage(playerGame, 'loser', currentClients).encode()
                     )
-                    _client['socket'].close()
             break
         
         connection.send(
