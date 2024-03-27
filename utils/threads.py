@@ -4,6 +4,9 @@ import utils.game as game
 
 BUFFER_SIZE = 1024
 
+# tipo de currentGames é uma lista de dicionarios
+# com os campos 'players' e 'table'
+
 def new_client_instructions(clientSocket, currentGames):
     clientSocket.send(
         bytes(
@@ -20,15 +23,15 @@ def new_client_instructions(clientSocket, currentGames):
     )
     time.sleep(0.2)
     # filtra pelos jogos que tem apenas 1 jogador
-    available_games = list(filter(lambda x: len(x['players']) == 1, currentGames))
+    available_games = {str(i): game for i, game in enumerate(currentGames) if len(game['players']) == 1}
     if(len(available_games) > 0):
         clientSocket.send(
             f'Existem {len(available_games)} jogos em andamento.'.encode()
         )
         time.sleep(0.2)
-        clientSocket.send(
-            f'Escolha o número do jogo que deseja entrar: {available_games.keys()}'.encode()
-        )
+        options = 'Escolha o ID do jogo que deseja entrar: '
+        options += ', '.join(available_games.keys())
+        clientSocket.send(options.encode())
         time.sleep(0.4)
         clientSocket.send('start-choose'.encode())
     else:
@@ -42,7 +45,7 @@ def new_client_instructions(clientSocket, currentGames):
         time.sleep(0.2)
         
 
-def handle_messages(connection, address, currentGames):
+def handle_messages(connection, address, currentGames, currentClients):
     while True:
         msg = connection.recv(BUFFER_SIZE)
         msg = msg.decode().split(':')
@@ -60,27 +63,38 @@ def handle_messages(connection, address, currentGames):
                 if address in _game['players']:
                     _game['players'].remove(address)
                     break
+            for _client in currentClients:
+                if _client['address'] == address:
+                    currentClients.remove(_client)
+                    break
             connection.send('close'.encode())
             connection.close()
             break
 
-        player1Game = None
-        
+        playerGame = None
         for _game in currentGames:
             if address in _game['players']:
-                player1Game = _game
+                playerGame = _game
                 break
-            
-        if player1Game == None:
-            print(
-                colorama.Fore.LIGHTRED_EX
-                + '[ERROR]: ' + colorama.Fore.RESET
-                + 'Jogo não encontrado.'
-            )
-            connection.send('not-found'.encode())
-            continue
+        
+        if playerGame == None:
+            connection.send('close'.encode())
+            connection.close()
+            break
+        
+        
+        currentPlayer = game.checkCurrentPlayer(playerGame['table']) # 1 or 2
+        
+        if currentPlayer == 1 and playerGame['players'][0] != address:
+            connection.send('close'.encode())
+            connection.close()
+            break
+        if currentPlayer == 2 and playerGame['players'][1] != address:
+            connection.send('close'.encode())
+            connection.close()
+            break
 
-        game.play(player1Game['table'], 1, msg)
+        game.play(playerGame['table'], currentPlayer, msg)
         
         print(
             colorama.Fore.LIGHTMAGENTA_EX
@@ -91,7 +105,14 @@ def handle_messages(connection, address, currentGames):
         )
         
         connection.send(
-            game.sendGameToMessage(player1Game).encode()
+            game.sendGameToMessage(playerGame, 'other_turn').encode()
         )
+        
+        # send the message to the other player
+        for _client in currentClients:
+            if _client['address'] in playerGame['players'] and _client['address'] != address:
+                _client['socket'].send(
+                    game.sendGameToMessage(playerGame, 'play').encode()
+                )
 
     connection.close()

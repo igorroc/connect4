@@ -46,26 +46,39 @@ while True:
     
     ServerThreads.new_client_instructions(clientSocket, currentGames)
 
+    selectedGame = None
+
     if(len(currentGames) > 0):
         msg = clientSocket.recv(BUFFER_SIZE)
         selectedIndex = msg.decode().split('choose:')[1]
-        if(selectedIndex not in currentGames.keys()):
+        if(selectedIndex == ''):
+            selectedIndex = 0
+        else:
+            selectedIndex = int(selectedIndex)
+            
+        if selectedIndex >= len(currentGames) or selectedIndex < 0:
+            print(
+                colorama.Fore.LIGHTRED_EX +
+                f'[ERROR]: Jogo {selectedIndex} não encontrado'
+                + colorama.Fore.RESET
+            )
             clientSocket.send('not-found'.encode())
             continue
 
-        currentGames[selectedIndex].append(clientSocket)
+        game.joinPlayerToGame(currentGames, selectedIndex, address)
         print(
             colorama.Fore.LIGHTCYAN_EX +
             f'[NEW_PLAYER]: `{address}` entrou no jogo {selectedIndex}'
             + colorama.Fore.RESET
         )
         clientSocket.send(
-            game.sendGameToMessage(currentGames[selectedIndex]).encode()
+            game.sendGameToMessage(currentGames[selectedIndex], 'wait').encode()
         )
+        selectedGame = currentGames[selectedIndex]
     else:
         game.createGameTable(currentGames, address)
         clientSocket.send(
-            game.sendGameToMessage(currentGames[0]).encode()
+            game.sendGameToMessage(currentGames[0], 'wait').encode()
         )
         print(
             colorama.Fore.LIGHTCYAN_EX +
@@ -85,6 +98,25 @@ while True:
     currentClients.append(
         {"socket": clientSocket, "address": address, "username": msg})
     
+    
+    
+    if(selectedGame != None):
+        clientSocket.send(
+            game.sendGameToMessage(selectedGame, 'opponent_turn').encode()
+        )
+        
+        for client in currentClients:
+            if client['address'] == selectedGame['players'][0]:
+                print(
+                    colorama.Fore.LIGHTGREEN_EX +
+                    '[GAME_START]: Jogo iniciado'
+                    + colorama.Fore.RESET
+                )
+                client['socket'].send(
+                    game.sendGameToMessage(selectedGame, 'play').encode()
+                )
+                break
+
     thread = threading.Thread(
-        target=ServerThreads.handle_messages, args=[clientSocket, address, currentGames])
+        target=ServerThreads.handle_messages, args=[clientSocket, address, currentGames, currentClients])
     thread.start()

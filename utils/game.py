@@ -14,17 +14,20 @@ def joinPlayerToGame(currentGames, index, connection):
 
 def getGameFromMessage(message):
     players = message.split('players:')[1].split(';')[0].split(',')
-    table = message.split('table:')[1].split(';')
+    action = message.split('action:')[1].split(';')[0]
+    table = message.split('table:')[1].split(';')[:-1]
     if table[-1] == '':
         table.pop()
-    return {'players': players, 'table': table}
+    return {'players': players, 'table': table, 'action': action}
 
-def sendGameToMessage(game):
+def sendGameToMessage(game, action):
     message = 'players:'
     message += ','.join([p[0] for p in game['players']]) + ';'
+    message += 'action:' + action + ';'
     message += 'table:'
     for i in game['table']:
         message += ','.join(map(str, i)) + ';'
+        
     return message
 
 def printTable(table):
@@ -94,3 +97,11 @@ def checkWinner(table):
     
     return 0
 
+def checkCurrentPlayer(table):
+    count = 0
+    for row in table:
+        for cell in row:
+            if cell != 0:
+                count += 1
+
+    return count % 2 + 1

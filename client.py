@@ -6,6 +6,7 @@ import utils.game as game
 HOST = gethostname()
 PORT = 55551
 BUFFER_SIZE = 1024
+PLAYER_SYMBOL = None
 
 
 def main():
@@ -53,12 +54,14 @@ def main():
                 colorama.Fore.LIGHTGREEN_EX +
                 '+ Conectado ao jogo ' + CURRENT_GAME
             )
+            PLAYER_SYMBOL = 2
     else:
         GAME = game.getGameFromMessage(msg.decode())
         print(
             colorama.Fore.LIGHTGREEN_EX +
             '+ Conectado a um novo jogo'
         )
+        PLAYER_SYMBOL = 1
 
     print("\n")
     print("Digite seu nome de usuário:")
@@ -70,13 +73,32 @@ def main():
     # Loop de interação com o servidor
     while msg.decode() != 'close':
         cmd.clear_screen()
-        print(f"Jogo -> {USER} x INIMIGO 2\n")
+        if GAME['action'] == 'wait_player' or GAME['action'] == 'wait':
+            print(f"Aguardando jogadores...")
+        else:
+            print(f"Jogadores: {', '.join(GAME['players'])}")
+        print()
         game.printTable(GAME['table'])
-        position = input(
-            colorama.Fore.LIGHTCYAN_EX +
-            " Sua jogada ▶ " + colorama.Fore.RESET
-        )
-        server.send(f'{USER}:{position}'.encode())
+        
+        if PLAYER_SYMBOL == 1:
+            print(
+                colorama.Fore.RED +
+                f"Você é o ' X '"
+                + colorama.Fore.RESET
+            )
+        else:
+            print(
+                colorama.Fore.YELLOW +
+                f"Você é o ' O '"
+                + colorama.Fore.RESET
+            )
+        
+        if(GAME['action'] == 'play'):
+            position = input(
+                colorama.Fore.LIGHTCYAN_EX +
+                " Sua jogada ▶ " + colorama.Fore.RESET
+            )
+            server.send(f'{USER}:{position}'.encode())
 
         msg = server.recv(BUFFER_SIZE)
         if msg.decode() != 'close':
