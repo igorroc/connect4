@@ -80,8 +80,6 @@ def main():
     # Loop de interação com o servidor
     while msg.decode() != 'close':
         cmd.clear_screen()
-        # else:
-        #     print(f"Jogadores: {', '.join(GAME['players'])}")
         print()
         game.printTable(GAME['table'])
         
@@ -108,6 +106,10 @@ def main():
         
         if GAME['action'] == 'wait_player' or GAME['action'] == 'wait':
             print(f"Aguardando jogadores...")
+        else:
+            # junta os jogadores em uma string, separando por X
+            players = GAME['players'][0] + ' X ' + GAME['players'][1]
+            print(players)
             
         if GAME['action'] == 'opponent_turn':
             print(f"Aguardando a jogada do oponente...")

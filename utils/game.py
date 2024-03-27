@@ -20,9 +20,12 @@ def getGameFromMessage(message):
         table.pop()
     return {'players': players, 'table': table, 'action': action}
 
-def sendGameToMessage(game, action):
+def sendGameToMessage(game, action, currentClients):
     message = 'players:'
-    message += ','.join([p[0] for p in game['players']]) + ';'
+    for client in currentClients:
+        if client['address'] in game['players']:
+            message += client['username'] + ','
+    message += ';'
     message += 'action:' + action + ';'
     message += 'table:'
     for i in game['table']:

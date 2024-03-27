@@ -101,7 +101,7 @@ def handle_messages(connection, address, currentGames, currentClients):
         
         if not validPlay:
             connection.send(
-                game.sendGameToMessage(playerGame, 'invalid_play').encode()
+                game.sendGameToMessage(playerGame, 'invalid_play', currentClients).encode()
             )
             continue
         
@@ -129,25 +129,25 @@ def handle_messages(connection, address, currentGames, currentClients):
             currentGames.remove(playerGame)
             
             connection.send(
-                game.sendGameToMessage(playerGame, 'winner').encode()
+                game.sendGameToMessage(playerGame, 'winner', currentClients).encode()
             )
             connection.close()
             for _client in currentClients:
                 if _client['address'] in playerGame['players'] and _client['address'] != address:
                     _client['socket'].send(
-                        game.sendGameToMessage(playerGame, 'loser').encode()
+                        game.sendGameToMessage(playerGame, 'loser', currentClients).encode()
                     )
                     _client['socket'].close()
             break
         
         connection.send(
-            game.sendGameToMessage(playerGame, 'other_turn').encode()
+            game.sendGameToMessage(playerGame, 'opponent_turn', currentClients).encode()
         )
         
         for _client in currentClients:
             if _client['address'] in playerGame['players'] and _client['address'] != address:
                 _client['socket'].send(
-                    game.sendGameToMessage(playerGame, 'play').encode()
+                    game.sendGameToMessage(playerGame, 'play', currentClients).encode()
                 )
 
     connection.close()

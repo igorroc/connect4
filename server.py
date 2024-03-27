@@ -71,14 +71,14 @@ while True:
                 + colorama.Fore.RESET
             )
             clientSocket.send(
-                game.sendGameToMessage(currentGames[selectedIndex], 'wait').encode()
+                game.sendGameToMessage(currentGames[selectedIndex], 'wait', currentClients).encode()
             )
             selectedGame = currentGames[selectedIndex]
         else:
             selectedGame = None
             game.createGameTable(currentGames, address)
             clientSocket.send(
-                game.sendGameToMessage(currentGames[0], 'wait').encode()
+                game.sendGameToMessage(currentGames[0], 'wait', currentClients).encode()
             )
             print(
                 colorama.Fore.LIGHTCYAN_EX +
@@ -89,7 +89,7 @@ while True:
     else:
         game.createGameTable(currentGames, address)
         clientSocket.send(
-            game.sendGameToMessage(currentGames[0], 'wait').encode()
+            game.sendGameToMessage(currentGames[0], 'wait', currentClients).encode()
         )
         print(
             colorama.Fore.LIGHTCYAN_EX +
@@ -112,7 +112,7 @@ while True:
     
     if(selectedGame != None):
         clientSocket.send(
-            game.sendGameToMessage(selectedGame, 'opponent_turn').encode()
+            game.sendGameToMessage(selectedGame, 'opponent_turn', currentClients).encode()
         )
         
         for client in currentClients:
@@ -123,7 +123,7 @@ while True:
                     + colorama.Fore.RESET
                 )
                 client['socket'].send(
-                    game.sendGameToMessage(selectedGame, 'play').encode()
+                    game.sendGameToMessage(selectedGame, 'play', currentClients).encode()
                 )
                 break
 
