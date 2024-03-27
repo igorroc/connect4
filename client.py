@@ -55,12 +55,13 @@ def main():
                     colorama.Fore.LIGHTGREEN_EX +
                     '+ Novo jogo'
                 )
+                PLAYER_SYMBOL = 1
             else:
                 print(
                     colorama.Fore.LIGHTGREEN_EX +
                     '+ Conectado ao jogo ' + CURRENT_GAME
                 )
-            PLAYER_SYMBOL = 2
+                PLAYER_SYMBOL = 2
     else:
         GAME = game.getGameFromMessage(msg.decode())
         print(
