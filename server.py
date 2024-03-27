@@ -53,30 +53,39 @@ while True:
     if(len(available_games) > 0):
         msg = clientSocket.recv(BUFFER_SIZE)
         selectedIndex = msg.decode().split('choose:')[1]
-        if(selectedIndex == ''):
-            selectedIndex = 0
-        else:
+        if(selectedIndex != ''):
             selectedIndex = int(selectedIndex)
-            
-        if selectedIndex >= len(currentGames) or selectedIndex < 0:
+            if selectedIndex >= len(currentGames) or selectedIndex < 0:
+                print(
+                    colorama.Fore.LIGHTRED_EX +
+                    f'[ERROR]: Jogo {selectedIndex} não encontrado'
+                    + colorama.Fore.RESET
+                )
+                clientSocket.send('not-found'.encode())
+                continue
+
+            game.joinPlayerToGame(currentGames, selectedIndex, address)
             print(
-                colorama.Fore.LIGHTRED_EX +
-                f'[ERROR]: Jogo {selectedIndex} não encontrado'
+                colorama.Fore.LIGHTCYAN_EX +
+                f'[NEW_PLAYER]: `{address}` entrou no jogo {selectedIndex}'
                 + colorama.Fore.RESET
             )
-            clientSocket.send('not-found'.encode())
-            continue
+            clientSocket.send(
+                game.sendGameToMessage(currentGames[selectedIndex], 'wait').encode()
+            )
+            selectedGame = currentGames[selectedIndex]
+        else:
+            selectedGame = None
+            game.createGameTable(currentGames, address)
+            clientSocket.send(
+                game.sendGameToMessage(currentGames[0], 'wait').encode()
+            )
+            print(
+                colorama.Fore.LIGHTCYAN_EX +
+                f'[NEW_GAME]: Jogo {len(currentGames)} criado'
+                + colorama.Fore.RESET
+            )
 
-        game.joinPlayerToGame(currentGames, selectedIndex, address)
-        print(
-            colorama.Fore.LIGHTCYAN_EX +
-            f'[NEW_PLAYER]: `{address}` entrou no jogo {selectedIndex}'
-            + colorama.Fore.RESET
-        )
-        clientSocket.send(
-            game.sendGameToMessage(currentGames[selectedIndex], 'wait').encode()
-        )
-        selectedGame = currentGames[selectedIndex]
     else:
         game.createGameTable(currentGames, address)
         clientSocket.send(

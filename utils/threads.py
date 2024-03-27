@@ -33,6 +33,9 @@ def new_client_instructions(clientSocket, currentGames):
         options += ', '.join(available_games.keys())
         clientSocket.send(options.encode())
         time.sleep(0.4)
+        clientSocket.send(
+            f'Deixe em branco para criar sua própria partida.'.encode()
+        )
         clientSocket.send('start-choose'.encode())
     else:
         clientSocket.send(

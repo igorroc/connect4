@@ -50,10 +50,16 @@ def main():
             return cmd.clear_terminal_color()
         else:
             GAME = game.getGameFromMessage(msg.decode())
-            print(
-                colorama.Fore.LIGHTGREEN_EX +
-                '+ Conectado ao jogo ' + CURRENT_GAME
-            )
+            if CURRENT_GAME == '':
+                print(
+                    colorama.Fore.LIGHTGREEN_EX +
+                    '+ Novo jogo'
+                )
+            else:
+                print(
+                    colorama.Fore.LIGHTGREEN_EX +
+                    '+ Conectado ao jogo ' + CURRENT_GAME
+                )
             PLAYER_SYMBOL = 2
     else:
         GAME = game.getGameFromMessage(msg.decode())
