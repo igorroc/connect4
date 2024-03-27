@@ -118,19 +118,19 @@ def main():
             if PLAYER_SYMBOL == 1:
                 print(
                     colorama.Fore.RED +
-                    f"Você é o ' X '"
+                    f"Você é o X"
                     + colorama.Fore.RESET
                 )
             else:
                 print(
                     colorama.Fore.YELLOW +
-                    f"Você é o ' O '"
+                    f"Você é o O"
                     + colorama.Fore.RESET
                 )
             position = input(
                 '\n' +
                 colorama.Fore.LIGHTCYAN_EX +
-                " Sua jogada ▶ " + colorama.Fore.RESET
+                "Sua jogada ▶ " + colorama.Fore.RESET
             )
             server.send(f'{USER}:{position}'.encode())
 
