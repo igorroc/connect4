@@ -55,9 +55,11 @@ def printTable(table):
     print('\n')
     
 def play(table, player, position):
+    if not position.isnumeric():
+        return False
+    
     position = int(position) - 1
     width = len(table[0])
-    height = len(table)
     
     if position < 0 or position >= width:
         return False
