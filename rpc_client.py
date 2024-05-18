@@ -36,7 +36,7 @@ class Connect4Client(rpyc.Service):
 
     def print_players(self):
         opponent = [p for p in self.game_state['players'] if p != self.username][0]
-        if self.PLAYER_SYMBOL == 0:
+        if self.PLAYER_SYMBOL == 1:
             print(
                 colorama.Fore.RED +
                 self.username
@@ -97,18 +97,6 @@ class Connect4Client(rpyc.Service):
             print(f"Aguardando a jogada do oponente...")
         elif self.game_state['action'] == 'play' or self.game_state['action'] == 'invalid_play':
             self.print_players()
-            if self.PLAYER_SYMBOL == 0:
-                print(
-                    colorama.Fore.RED +
-                    f"Você é o X"
-                    + colorama.Fore.RESET
-                )
-            else:
-                print(
-                    colorama.Fore.YELLOW +
-                    f"Você é o O"
-                    + colorama.Fore.RESET
-                )
                 
             isValid = False
             while not isValid:
