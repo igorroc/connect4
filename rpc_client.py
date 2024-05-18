@@ -137,7 +137,6 @@ class Connect4Client(rpyc.Service):
         self.PLAYER_SYMBOL = symbol
     
     def exposed_get_player_symbol(self):
-        print(self.username, self.PLAYER_SYMBOL)
         return self.PLAYER_SYMBOL
     
     def exposed_get_username(self):

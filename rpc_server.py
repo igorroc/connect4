@@ -120,42 +120,22 @@ class Connect4Service(rpyc.Service):
 
             # grant that the message with action "opponent_turn" is sent first
             connectionMessages.sort(key=lambda x: x[1]['action'] == 'opponent_turn', reverse=True)
-            threading.Thread(target=self.send_messages, args=(connectionMessages,)).start()
+            threading.Thread(target=self.send_messages, args=(connectionMessages,game_index,)).start()
 
         except Exception as e:
             print(f"Error in notify_players: {e}")
 
-    def send_messages(self, messages):
+    def send_messages(self, messages, game_index):
         for conn, message in messages:
             try:
                 if message['action'] == 'winner' or message['action'] == 'loser':
-                    currentGames.remove(game.getGameFromMessage(game.sendGameToMessage(message, 'winner', currentClients)))
+                    if len(currentGames) > game_index:
+                        currentGames.pop(game_index)
                     print(f"Vencedor: {conn.root.get_username()}")
                 conn.root.update_game(message)
             except Exception as e:
                 print(f"Failed to send message: {e}")
 
-    def notify_winner(self, game_index, winner):
-        try:
-            for client in currentClients:
-                if client['username'] in currentGames[game_index]['players']:
-                    try:
-                        if len(currentGames[game_index]['players']) == 2:
-                            if client['username'] == winner:
-                                action = 'winner'
-                            else:
-                                action = 'loser'
-                            
-                            print(f"Sending message to {client['username']} - {action}")
-                            game_state = game.sendGameToMessage(currentGames[game_index], action, currentClients)
-                            threading
-                            client['conn'].root.update_game(game.getGameFromMessage(game_state))
-
-                    except Exception as e:
-                        print(f"Failed to notify {client['username']}: {e}")
-        except Exception as e:
-            print(f"Error in notify_winner: {e}")
-            
 if __name__ == "__main__":
     server = ThreadedServer(Connect4Service, port=PORT)
     print(
