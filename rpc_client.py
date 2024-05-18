@@ -2,6 +2,7 @@ import rpyc
 import utils.terminal as cmd
 import colorama
 import utils.game as game
+from utils.ip import get_local_ip
 
 class Connect4Client(rpyc.Service):
     def on_connect(self, conn):
@@ -144,7 +145,7 @@ class Connect4Client(rpyc.Service):
 
 def main():
     cmd.clear_screen()
-    HOST = input("Digite o host que deseja conectar: ") or '192.168.1.12'
+    HOST = input("Digite o host que deseja conectar: ") or get_local_ip()
     PORT = input("Digite a porta que deseja conectar: ")
     PORT = int(PORT) if PORT else 3000
     print('Tentando se conectar ao servidor...')
