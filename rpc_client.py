@@ -156,10 +156,9 @@ class Connect4Client(rpyc.Service):
 
 def main():
     cmd.clear_screen()
-    # HOST = input("Digite o host que deseja conectar: ")
-    # PORT = int(input("Digite a porta que deseja conectar: "))
-    HOST = '192.168.1.12'
-    PORT = 3000
+    HOST = input("Digite o host que deseja conectar: ") or '192.168.1.12'
+    PORT = input("Digite a porta que deseja conectar: ")
+    PORT = int(PORT) if PORT else 3000
     print('Tentando se conectar ao servidor...')
     print(f'HOST: {HOST},PORT:{PORT}')
     cmd.delay_loading(10)

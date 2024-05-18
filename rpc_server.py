@@ -10,8 +10,8 @@ from utils.ip import get_local_ip
 cmd.clear_terminal_color()
 cmd.clear_screen()
 
-PORT = 3000
-# PORT = int(input("Digite a porta que deseja utilizar: "))
+PORT = input("Digite a porta que deseja utilizar: ")
+PORT = int(PORT) if PORT else 3000
 
 cmd.clear_screen()
 cmd.server_loading()
