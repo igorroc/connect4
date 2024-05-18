@@ -5,6 +5,7 @@ import utils.game as game
 from utils.ip import get_local_ip
 
 class Connect4Client(rpyc.Service):
+    game_over = False
     def on_connect(self, conn):
         self._conn = conn
         self.game_state = None
@@ -18,10 +19,11 @@ class Connect4Client(rpyc.Service):
             self.wait_for_updates()
             
         except Exception as e:
-            print(
-                colorama.Fore.LIGHTRED_EX +
-                f'\n- Ocorreu um erro: {e}'
-            )
+            if not self.game_over:
+                print(
+                    colorama.Fore.LIGHTRED_EX +
+                    f'\n- Ocorreu um erro: {e}' + colorama.Fore.RESET
+                )
         finally:
             print('\n')
             print(colorama.Fore.LIGHTRED_EX + f'- Conexão encerrada com o servidor')
@@ -79,12 +81,16 @@ class Connect4Client(rpyc.Service):
                 f"Você venceu o jogo! Parabéns!"
                 + colorama.Fore.RESET
             )
+            self.game_over = True
+            self._conn.close()
         elif self.game_state['action'] == 'loser':
             print(
                 colorama.Fore.LIGHTRED_EX +
                 f"Você perdeu o jogo! Tente novamente!"
                 + colorama.Fore.RESET
             )
+            self.game_over = True
+            self._conn.close()
         elif self.game_state['action'] == 'invalid_play':
             print(
                 colorama.Fore.LIGHTRED_EX +
@@ -130,7 +136,7 @@ class Connect4Client(rpyc.Service):
                 self._conn.serve(1)  # Keep the connection alive and serve requests
         except KeyboardInterrupt:
             print('\n')
-            print(colorama.Fore.LIGHTRED_EX + '- Conexão encerrada com o servidor')
+            print(colorama.Fore.LIGHTRED_EX + '- Conexão encerrada com o servidor' + colorama.Fore.RESET)
             cmd.clear_terminal_color()
 
     def exposed_set_player_symbol(self, symbol):

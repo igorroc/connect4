@@ -43,7 +43,7 @@ class Connect4Service(rpyc.Service):
 
     def exposed_add_client(self, username):
         currentClients.append({"conn": self._conn, "username": username})
-        print(f"Usuário conectado: {username}")
+        print(f"▶ Usuário conectado: {username}")
 
     def exposed_join_game(self, username, selectedIndex = None):
         available_games = [g for g in currentGames if len(g['players']) == 1]
@@ -70,6 +70,8 @@ class Connect4Service(rpyc.Service):
             game_message = game.getGameFromMessage(game_state)
             self._conn.root.update_game(game_message)
             self.notify_players(int(selectedIndex))
+            players = game_message['players']
+            print(f"• Jogo iniciado entre " + colorama.Fore.RED + players[0] + colorama.Fore.RESET + " e " + colorama.Fore.YELLOW + players[1] + colorama.Fore.RESET)
             return game_message
         else:
             current_game = game.createGameTable(currentGames, username)
@@ -116,14 +118,14 @@ class Connect4Service(rpyc.Service):
                             connectionMessages.append((client['conn'], game.getGameFromMessage(game_state)))
 
                     except Exception as e:
-                        print(f"Failed to notify {client['username']}: {e}")
+                        print(colorama.Fore.RED + f"Falha ao notificar {client['username']}: {e}" + colorama.Fore.RESET)
 
             # grant that the message with action "opponent_turn" is sent first
             connectionMessages.sort(key=lambda x: x[1]['action'] == 'opponent_turn', reverse=True)
             threading.Thread(target=self.send_messages, args=(connectionMessages,game_index,)).start()
 
         except Exception as e:
-            print(f"Error in notify_players: {e}")
+            print(colorama.Fore.RED + f"Erro ao notificar: {e}" + colorama.Fore.RESET)
 
     def send_messages(self, messages, game_index):
         for conn, message in messages:
@@ -131,10 +133,11 @@ class Connect4Service(rpyc.Service):
                 if message['action'] == 'winner' or message['action'] == 'loser':
                     if len(currentGames) > game_index:
                         currentGames.pop(game_index)
-                    print(f"Vencedor: {conn.root.get_username()}")
+                    if message['action'] == 'winner':
+                        print(colorama.Fore.GREEN + f"Vencedor: {conn.root.get_username()}" + colorama.Fore.RESET)
                 conn.root.update_game(message)
             except Exception as e:
-                print(f"Failed to send message: {e}")
+                print(colorama.Fore.RED + f"Erro ao enviar mensagem: {e}" + colorama.Fore.RESET)
 
 if __name__ == "__main__":
     server = ThreadedServer(Connect4Service, port=PORT)
