@@ -1,10 +1,10 @@
 import rpyc
-from rpyc.utils.server import ThreadedServer
-import threading
-import utils.terminal as cmd
-import utils.game as game
 import colorama
-import utils.threads as ServerThreads
+import threading
+from rpyc.utils.server import ThreadedServer
+
+import utils.game as game
+import utils.terminal as cmd
 from utils.ip import get_local_ip
 
 cmd.clear_terminal_color()

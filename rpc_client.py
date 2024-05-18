@@ -1,7 +1,8 @@
 import rpyc
-import utils.terminal as cmd
 import colorama
+
 import utils.game as game
+import utils.terminal as cmd
 from utils.ip import get_local_ip
 
 class Connect4Client(rpyc.Service):
