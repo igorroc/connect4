@@ -31,9 +31,7 @@ def delay_loading(delay):
 
 def server_loading():
     print('Iniciando servidor...')
-    delay_loading(5)
-    print('Criando socket...')
-    delay_loading(7)
+    delay_loading(10)
 
 
 def clear_screen():

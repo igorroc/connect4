@@ -5,6 +5,7 @@ def createGameTable(currentGames, connection):
         'players': [connection],
         'table': [[0 for i in range(7)] for j in range(6)]
     })
+    return currentGames[-1]
 
 def joinPlayerToGame(currentGames, index, connection):
     if index >= len(currentGames):
@@ -23,7 +24,7 @@ def getGameFromMessage(message):
 def sendGameToMessage(game, action, currentClients):
     message = 'players:'
     for client in currentClients:
-        if client['address'] in game['players']:
+        if client['username'] in game['players']:
             message += client['username'] + ','
     message += ';'
     message += 'action:' + action + ';'
