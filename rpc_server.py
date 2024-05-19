@@ -100,12 +100,15 @@ class Connect4Service(rpyc.Service):
             connectionMessages = []
             
             game_winner = game.checkWinner(currentGames[game_index]['table'])
+            game_draw = game.checkDraw(currentGames[game_index]['table'])
             
             for client in currentClients:
                 if client['username'] in currentGames[game_index]['players']:
                     try:
                         if len(currentGames[game_index]['players']) == 2:
-                            if game_winner != 0 and client['conn'].root.get_player_symbol() == game_winner:
+                            if game_draw:
+                                action = 'draw'
+                            elif game_winner != 0 and client['conn'].root.get_player_symbol() == game_winner:
                                 action = 'winner'
                             elif game_winner != 0 and client['conn'].root.get_player_symbol() != game_winner:
                                 action = 'loser'

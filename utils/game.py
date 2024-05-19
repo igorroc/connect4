@@ -103,6 +103,13 @@ def checkWinner(table):
     
     return 0
 
+def checkDraw(table):
+    for i in range(6):
+        for j in range(7):
+            if table[i][j] == 0:
+                return False
+    return True
+
 def checkCurrentPlayer(table):
     count = 0
     for row in table:

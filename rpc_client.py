@@ -76,6 +76,14 @@ class Connect4Client(rpyc.Service):
         print()
         game.printTable(self.game_state['table'])
         
+        if self.game_state['action'] == 'draw':
+            print(
+                colorama.Fore.LIGHTYELLOW_EX +
+                f"O jogo empatou!"
+                + colorama.Fore.RESET
+            )
+            self.game_over = True
+            self._conn.close()
         if self.game_state['action'] == 'winner':
             print(
                 colorama.Fore.LIGHTGREEN_EX +
