@@ -177,6 +177,5 @@ def main():
         return cmd.clear_terminal_color()
 
 
-
 if __name__ == "__main__":
     main()
